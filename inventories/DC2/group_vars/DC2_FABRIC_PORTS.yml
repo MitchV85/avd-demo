@@ -1,0 +1,163 @@
+---
+port_profiles:
+
+  PP-GAME-PUBLIC:
+    mode: "access"
+    vlans: "900"
+    spanning_tree_portfast: edge
+    flowcontrol:
+      received: "'on'"
+
+  PP-BIZ-DATA:
+    mode: "access"
+    vlans: "20"
+    spanning_tree_portfast: edge
+    flowcontrol:
+      received: "'on'"
+
+  PP-GAME-PRIVATE:
+    mode: "access"
+    vlans: "10"
+    spanning_tree_portfast: edge
+    flowcontrol:
+      received: "'on'"
+
+  PP-MGMT:
+    mode: "access"
+    vlans: "100"
+    spanning_tree_portfast: edge
+
+  PP-AP-TRUNK:
+    mode: "trunk"
+    native_vlan: "100"
+    spanning_tree_portfast: edge
+
+  PP-TRUNK:
+    mode: "trunk"
+    spanning_tree_portfast: edge
+
+
+###########################################################################
+# Multihomed Endpoints (servers, firewalls, load balancers, etc.)         #
+###########################################################################
+servers:
+
+  FW-INSIDE:                                            # Server name
+    adapters:
+      - endpoint_ports: [OPT1,LAN]                      # Server port to connect (optional)
+        switch_ports: [Ethernet48,Ethernet48]           # Switch port to connect server (required)
+        switches: [SW-CORE-A,SW-CORE-B]                 # Switch to connect server (required)
+        profile: PP-MGMT                                # Port profile to apply (required)
+        port_channel:
+          mode: active
+
+
+###########################################################################
+# Non-PortChannel Switchport Configurations                               #
+###########################################################################
+network_ports:
+  ###################################################
+  # SW-ACCESS-A                                     #
+  ###################################################
+  - switches:
+      - SW-ACCESS-A
+    switch_ports:
+      - Ethernet1-7,9-48
+    profile: PP-GAME-PUBLIC
+    description: "GAME PUBLIC"
+
+  - switches:
+      - SW-ACCESS-A
+    switch_ports:
+      - Ethernet8
+    profile: PP-BIZ-DATA
+    description: "BIZ DATA"
+
+  ###################################################
+  # SW-ACCESS-B and SW-ACCESS-C                     #
+  ###################################################
+  - switches:
+      - SW-ACCESS-[BC]
+    switch_ports:
+      - Ethernet1-48
+    profile: PP-GAME-PUBLIC
+    description: "GAME PUBLIC"
+
+  ####################################################
+  # SW-CORE-A                                        #
+  ####################################################
+  - switches:
+      - SW-CORE-A
+    switch_ports:
+      - Ethernet1-22,24-38,40-43,46
+    profile: PP-BIZ-DATA
+    description: "BIZ DATA"
+
+  - switches:
+      - SW-CORE-A
+    switch_ports:
+      - Ethernet23
+    profile: PP-AP-TRUNK
+    description: "1L2P AP-B"
+
+  - switches:
+      - SW-CORE-A
+    switch_ports:
+      - Ethernet39
+    profile: PP-AP-TRUNK
+    description: "1L2P AP-A"
+
+  - switches:
+      - SW-CORE-A
+    switch_ports:
+      - Ethernet47
+    profile: PP-MGMT
+    description: "ESX-NIC1"
+
+  ####################################################
+  # SW-CORE-B                                        #
+  ####################################################
+  - switches:
+    - SW-CORE-B
+    switch_ports:
+      - Ethernet1-6,8-43,47
+    profile: PP-BIZ-DATA
+    description: "BIZ DATA"
+
+  - switches:
+      - SW-CORE-B
+    switch_ports:
+      - Ethernet7
+    profile: PP-AP-TRUNK
+    description: "1L2P AP-C"
+
+  - switches:
+      - SW-CORE-B
+    switch_ports:
+      - Ethernet25
+    profile: PP-GAME-PUBLIC
+    description: "StudioB"
+
+  - switches:
+      - SW-CORE-B
+    switch_ports:
+      - Ethernet37
+    profile: PP-GAME-PRIVATE
+    description: "NAS"
+
+  - switches:
+      - SW-CORE-B
+    switch_ports:
+      - Ethernet46
+    profile: PP-TRUNK
+    description: "ESX-NIC2"
+
+  ###################################################
+  # SW-INET-A                                       #
+  ###################################################
+  - switches:
+      - SW-INET-A
+    switch_ports:
+      - Ethernet2
+    profile: PP-GAME-PUBLIC
+    description: "FW Outside"

@@ -1,0 +1,100 @@
+---
+port_profiles:
+
+  APP:
+    mode: "access"
+    vlans: "10"
+    spanning_tree_portfast: edge
+
+  WEB:
+    mode: "access"
+    vlans: "20"
+    spanning_tree_portfast: edge
+
+  DB:
+    mode: "access"
+    vlans: "30"
+    spanning_tree_portfast: edge
+
+  VMWARE-MLAG:
+    mode: "trunk"
+    vlans: "10,20,30"
+    spanning_tree_portfast: edge
+
+###########################################################
+# ---------------- Endpoint Connectivity ---------------- #
+###########################################################
+
+servers:
+
+# --------------------------------------------------------#
+# DC1-RACK1 Endpoints
+# --------------------------------------------------------#
+
+  HOSTA:                                                  # Server name
+    rack: RACK1                                           # Informational RACK (optional)
+    adapters:
+      - endpoint_ports: [eth1,eth2]                       # Server port to connect (optional)
+        switch_ports: [Ethernet3,Ethernet3]               # Switch port to connect server (required)
+        switches: [DC1-LEAF1,DC1-LEAF2]                   # Switch to connect server (required)
+        profile: APP                                      # Port profile to apply (required)
+        port_channel:
+          mode: active
+
+  HOSTB:                                                  # Server name
+    rack: RACK1                                           # Informational RACK (optional)
+    adapters:
+      - endpoint_ports: [eth1,eth2]                       # Server port to connect (optional)
+        switch_ports: [Ethernet4,Ethernet4]               # Switch port to connect server (required)
+        switches: [DC1-LEAF1,DC1-LEAF2]                           # Switch to connect server (required)
+        profile: DB                                       # Port profile to apply (required)
+        port_channel:
+          mode: active
+
+# --------------------------------------------------------#
+# DC1-RACK2 Endpoints
+# --------------------------------------------------------#
+
+  HOSTC:                                             # Server name
+    rack: RACK2                                      # Informational RACK (optional)
+    adapters:
+      - endpoint_ports: [eth1,eth2]                  # Server port to connect (optional)
+        switch_ports: [Ethernet3,Ethernet3]          # Switch port to connect server (required)
+        switches: [DC1-LEAF3,DC1-LEAF4]                      # Switch to connect server (required)
+        profile: APP                                 # Port profile to apply (required)
+        port_channel:
+          mode: active
+
+  HOSTD:                                             # Server name
+    rack: RACK2                                      # Informational RACK (optional)
+    adapters:
+      - endpoint_ports: [eth1,eth2]                  # Server port to connect (optional)
+        switch_ports: [Ethernet4,Ethernet4]          # Switch port to connect server (required)
+        switches: [DC1-LEAF3,DC1-LEAF4]                      # Switch to connect server (required)
+        profile: WEB                                 # Port profile to apply (required)
+        port_channel:
+          mode: active
+
+# --------------------------------------------------------#
+# DC1-RACK3 Endpoints
+# --------------------------------------------------------#
+
+  HOSTE:                                             # Server name
+    rack: RACK3                                      # Informational RACK (optional)
+    adapters:
+      - endpoint_ports: [eth1,eth2]                  # Server port to connect (optional)
+        switch_ports: [Ethernet3,Ethernet3]          # Switch port to connect server (required)
+        switches: [DC1-LEAF5,DC1-LEAF6]                      # Switch to connect server (required)
+        profile: APP                                 # Port profile to apply (required)
+        port_channel:
+          mode: active
+
+  HOSTF:                                             # Server name
+    rack: RACK3                                      # Informational RACK (optional)
+    adapters:
+      - endpoint_ports: [eth1,eth2]                  # Server port to connect (optional)
+        switch_ports: [Ethernet4,Ethernet4]          # Switch port to connect server (required)
+        switches: [DC1-LEAF5,DC1-LEAF6]                      # Switch to connect server (required)
+        profile: DB                                  # Port profile to apply (required)
+        port_channel:
+          mode: active

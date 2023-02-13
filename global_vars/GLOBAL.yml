@@ -1,0 +1,230 @@
+---
+
+# aaa authentication and authorization
+aaa_authentication:
+  login:
+    default: group tacacs_group_1 local
+
+aaa_authorization:
+  exec:
+    default: group tacacs_group_1 local
+
+# aaa local users
+local_users:
+  admin:
+    privilege: 15
+    role: network-admin
+    sha512_password: "$6$eucN5ngreuExDgwS$xnD7T8jO..GBDX0DUlp.hn.W7yW94xTjSanqgaQGBzPIhDAsyAl9N4oScHvOMvf07uVBFI4mKMxwdVEUVKgY/."
+
+# aaa server group(s)
+aaa_server_groups:
+  - name: tacacs_group_1
+    type: tacacs+
+    servers:
+      - server: 10.100.0.156
+        vrf: MGMT
+      - server: 10.100.0.157
+        vrf: MGMT
+
+# ACLs
+# ip_access_lists:
+#   - name: AL-NETWORK-MANAGEMENT
+#     # Disable counters (not supported in cEOS)
+#     counters_per_entry: false
+#     entries:
+#       - sequence: 5
+#         remark: "Flow Collector 1"
+#       - sequence: 10
+#         action: permit
+#         protocol: ip
+#         source: 10.200.0.233/32
+#         destination: any
+#       - sequence: 15
+#         remark: "Flow Collector 2"
+#       - sequence: 20
+#         action: permit
+#         protocol: ip
+#         source: 10.183.197.23/32
+#         destination: any
+#       - sequence: 25
+#         remark: "Jumphost 1"
+#       - sequence: 30
+#         action: permit
+#         protocol: ip
+#         source: 10.200.0.228/32
+#         destination: any
+#       - sequence: 35
+#         remark: "Jumphost 2"
+#       - sequence: 40
+#         action: permit
+#         protocol: ip
+#         source: 10.200.18.54/32
+#         destination: any
+#       - sequence: 45
+#         remark: "Monitor 1"
+#       - sequence: 50
+#         action: permit
+#         protocol: ip
+#         source: 172.118.3.0/24
+#         destination: any
+
+# ARP timer (Should always be less than the MAC timer)
+arp:
+  aging:
+    timeout_default: 1500
+
+# CloudVision/TerminAttr
+# daemon_terminattr:
+#   cvaddrs: # For single cluster
+#     - apiserver.arista.io:443
+#   cvauth:
+#     method: "token-secure"
+#     token_file: /tmp/cv-onboarding-token
+#   cvvrf: MGMT
+#   disable_aaa: true
+#   taillogs:
+#   ingestexclude: "/Sysdb/cell/1/agent,/Sysdb/cell/2/agent"
+#   smashexcludes: "ale,flexCounter,hardware,kni,pulse,strata"
+
+# DNS Servers
+name_servers:
+  - 10.201.0.10
+  - 10.202.0.10
+
+# DNS lookup source interface
+ip_domain_lookup:
+  source_interfaces:
+    Management1:
+      vrf: MGMT
+
+# Event-monitor
+event_monitor:
+  enabled: true
+
+# HTTP Client source interface and VRF
+ip_http_client_source_interfaces:
+    - name: Management1
+      vrf: MGMT
+
+# LLDP Source Interface
+lldp:
+  management_address: management1
+  vrf: MGMT
+
+#MAC timer (Should always be greater than the ARP timer)
+mac_address_table:
+  aging_time: 1800
+
+# Management Gateway and VRF
+mgmt_gateway: 172.100.100.1
+mgmt_interface: Management1
+mgmt_interface_vrf: MGMT
+
+# NTP Servers (source interface defined in group specific YML files (CORE, ACCESS, MGMT, INET)
+ntp:
+  local_interface:
+    name: Management1
+    vrf: MGMT
+  servers:
+    - name: 10.201.0.10
+      preferred: true
+      vrf: MGMT
+    - name: 10.202.0.10
+      vrf: MGMT
+
+# RADIUS source interface and VRF
+ip_radius_source_interfaces:
+  - name: Management1
+    vrf: MGMT
+
+# SNMP
+snmp_server:
+  communities:
+    PlaceHolderCommunity:
+      access: ro
+      access_list_ipv4:
+        name: AL-NETWORK-MANAGEMENT
+  local_interfaces:
+    Management1:
+      vrf: MGMT
+  hosts:
+    - host: 10.100.0.11
+      vrf: MGMT
+      version: 2c
+      community: PlaceHolderCommunity
+    - host: 10.100.0.12
+      vrf: MGMT
+      version: 2c
+      community: PlaceHolderCommunity
+  traps:
+    enable: true
+  vrfs:
+    - name: default
+      enable: false
+    - name: MGMT
+      enable: true
+
+# Switchport defaults
+switchport_default:
+  mode: routed
+
+# SSH Management Settings
+management_ssh:
+  vrfs:
+    - name: default
+      enable: false
+    - name: MGMT
+      enable: true
+
+# Commented queue monitor commands out as they're not supported in cEOS
+# queue_monitor_length:
+#   enabled: true
+
+# queue_monitor_streaming:
+#   vrf: MGMT
+#   enable: true
+
+# Syslog
+logging:
+  vrfs:
+    MGMT:
+      source_interface: Management1
+      hosts:
+        10.201.0.108:
+        10.202.0.108:
+
+# TACACS servers
+tacacs_servers:
+  hosts:
+    - host: 10.100.0.156
+      vrf: MGMT
+      key: 055A0A5D311E1E5B4944
+    - host: 10.100.0.157
+      vrf: MGMT
+      key: 055A0A5D311E1E5B4944
+
+# TACACS source interface and VRF
+ip_tacacs_source_interfaces:
+  - name: Management1
+    vrf: MGMT
+
+# Timezone
+clock:
+  timezone: "America/Detroit"
+
+# Ansible connectivity definitions
+# eAPI connectivity via HTTPS is specified (as opposed to CLI via SSH)
+ansible_connection: ansible.netcommon.httpapi
+
+# Specifies that we are indeed using Arista EOS
+ansible_network_os: arista.eos.eos
+
+# Use SSL (HTTPS)
+ansible_httpapi_use_ssl: true
+
+# Do not try to validate certs
+ansible_httpapi_validate_certs: false
+
+# Credentials for eAPI deployment model
+ansible_user: admin
+ansible_ssh_pass: admin

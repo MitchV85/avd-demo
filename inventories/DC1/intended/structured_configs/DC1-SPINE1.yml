@@ -1,0 +1,181 @@
+router_bgp:
+  as: '65000'
+  router_id: 1.1.1.1
+  bgp_defaults:
+  - no bgp default ipv4-unicast
+  - distance bgp 20 200 200
+  - neighbor default send-community
+  - graceful-restart restart-time 300
+  - graceful-restart
+  - maximum-paths 4 ecmp 4
+  bgp_cluster_id: 1.1.1.1
+  peer_groups:
+    EVPN-OVERLAY-LOCAL-PEERS:
+      type: evpn
+      update_source: Loopback0
+      bfd: true
+      password: LenMQ+SJnRMvQfwsxxnuXw==
+      send_community: all
+      maximum_routes: 0
+      remote_as: '65000'
+      route_reflector_client: true
+  address_family_ipv4:
+    peer_groups:
+      EVPN-OVERLAY-LOCAL-PEERS:
+        activate: false
+  address_family_evpn:
+    peer_groups:
+      EVPN-OVERLAY-LOCAL-PEERS:
+        activate: true
+  neighbors:
+    1.1.1.11:
+      peer_group: EVPN-OVERLAY-LOCAL-PEERS
+      description: DC1-LEAF1
+    1.1.1.12:
+      peer_group: EVPN-OVERLAY-LOCAL-PEERS
+      description: DC1-LEAF2
+    1.1.1.13:
+      peer_group: EVPN-OVERLAY-LOCAL-PEERS
+      description: DC1-LEAF3
+    1.1.1.14:
+      peer_group: EVPN-OVERLAY-LOCAL-PEERS
+      description: DC1-LEAF4
+    1.1.1.15:
+      peer_group: EVPN-OVERLAY-LOCAL-PEERS
+      description: DC1-LEAF5
+    1.1.1.16:
+      peer_group: EVPN-OVERLAY-LOCAL-PEERS
+      description: DC1-LEAF6
+static_routes:
+- vrf: MGMT
+  destination_address_prefix: 0.0.0.0/0
+  gateway: 172.100.100.1
+service_routing_protocols_model: multi-agent
+ip_routing: true
+vlan_internal_order:
+  allocation: ascending
+  range:
+    beginning: 1006
+    ending: 1199
+name_server:
+  source:
+    vrf: MGMT
+  nodes:
+  - 10.201.0.10
+  - 10.202.0.10
+spanning_tree:
+  mode: none
+local_users:
+  admin:
+    privilege: 15
+    role: network-admin
+    sha512_password: $6$eucN5ngreuExDgwS$xnD7T8jO..GBDX0DUlp.hn.W7yW94xTjSanqgaQGBzPIhDAsyAl9N4oScHvOMvf07uVBFI4mKMxwdVEUVKgY/.
+vrfs:
+  MGMT:
+    ip_routing: false
+management_interfaces:
+  Management0:
+    description: oob_management
+    shutdown: false
+    vrf: MGMT
+    ip_address: 172.100.100.101/23
+    gateway: 172.100.100.1
+    type: oob
+mac_address_table:
+  aging_time: 1800
+management_api_http:
+  enable_vrfs:
+    MGMT: {}
+  enable_https: true
+ethernet_interfaces:
+  Ethernet1:
+    peer: DC1-LEAF1
+    peer_interface: Ethernet1
+    peer_type: l3leaf
+    description: P2P_LINK_TO_DC1-LEAF1_Ethernet1
+    shutdown: false
+    mtu: 9214
+    type: routed
+    ip_address: 10.0.0.40/31
+    ospf_network_point_to_point: true
+    ospf_area: 0.0.0.0
+  Ethernet2:
+    peer: DC1-LEAF2
+    peer_interface: Ethernet1
+    peer_type: l3leaf
+    description: P2P_LINK_TO_DC1-LEAF2_Ethernet1
+    shutdown: false
+    mtu: 9214
+    type: routed
+    ip_address: 10.0.0.44/31
+    ospf_network_point_to_point: true
+    ospf_area: 0.0.0.0
+  Ethernet3:
+    peer: DC1-LEAF3
+    peer_interface: Ethernet1
+    peer_type: l3leaf
+    description: P2P_LINK_TO_DC1-LEAF3_Ethernet1
+    shutdown: false
+    mtu: 9214
+    type: routed
+    ip_address: 10.0.0.48/31
+    ospf_network_point_to_point: true
+    ospf_area: 0.0.0.0
+  Ethernet4:
+    peer: DC1-LEAF4
+    peer_interface: Ethernet1
+    peer_type: l3leaf
+    description: P2P_LINK_TO_DC1-LEAF4_Ethernet1
+    shutdown: false
+    mtu: 9214
+    type: routed
+    ip_address: 10.0.0.52/31
+    ospf_network_point_to_point: true
+    ospf_area: 0.0.0.0
+  Ethernet5:
+    peer: DC1-LEAF5
+    peer_interface: Ethernet1
+    peer_type: l3leaf
+    description: P2P_LINK_TO_DC1-LEAF5_Ethernet1
+    shutdown: false
+    mtu: 9214
+    type: routed
+    ip_address: 10.0.0.56/31
+    ospf_network_point_to_point: true
+    ospf_area: 0.0.0.0
+  Ethernet6:
+    peer: DC1-LEAF6
+    peer_interface: Ethernet1
+    peer_type: l3leaf
+    description: P2P_LINK_TO_DC1-LEAF6_Ethernet1
+    shutdown: false
+    mtu: 9214
+    type: routed
+    ip_address: 10.0.0.60/31
+    ospf_network_point_to_point: true
+    ospf_area: 0.0.0.0
+loopback_interfaces:
+  Loopback0:
+    description: EVPN_Overlay_Peering
+    shutdown: false
+    ip_address: 1.1.1.1/32
+    ospf_area: 0.0.0.0
+router_ospf:
+  process_ids:
+    100:
+      passive_interface_default: true
+      router_id: 1.1.1.1
+      max_lsa: 12000
+      no_passive_interfaces:
+      - Ethernet1
+      - Ethernet2
+      - Ethernet3
+      - Ethernet4
+      - Ethernet5
+      - Ethernet6
+      bfd_enable: false
+router_bfd:
+  multihop:
+    interval: 300
+    min_rx: 300
+    multiplier: 3

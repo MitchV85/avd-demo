@@ -1,0 +1,515 @@
+---
+
+fabric_name: FE_SDC_FABRIC
+
+underlay_routing_protocol: EBGP
+overlay_routing_protocol: EBGP
+
+p2p_uplinks_mtu: 9214
+
+evpn_import_pruning: true
+
+bgp_peer_groups:
+  ipv4_underlay_peers:
+    name: IPV4-UNDERLAY-PEERS
+    password: EncryptedPasswordHere
+  mlag_ipv4_underlay_peer:
+    name: MLAG-IPV4-UNDERLAY-PEER
+    password: EncryptedPasswordHere
+  evpn_overlay_peers:
+    name: EVPN-OVERLAY-LOCAL-PEERS
+    password: EncryptedPasswordHere
+  evpn_overlay_core:
+    name: EVPN-OVERLAY-REMOTE-PEERS
+    password: EncryptedPasswordHere
+
+##################################################
+# FE SDC Spines                                  #
+##################################################
+spine:
+  defaults:
+    platform: 7500R3
+    bgp_as: 4200000200
+    loopback_ipv4_pool: 10.231.0.0/24
+    bgp_defaults:
+      - 'no bgp default ipv4-unicast'
+      - 'distance bgp 20 200 200'
+      - 'neighbor default send-community'
+      - 'graceful-restart restart-time 300'
+      - 'graceful-restart'
+  nodes:
+    - name: SDC-ASPINE-1
+      id: 110
+      mgmt_ip: 10.171.7.110/23
+    - name: SDC-ASPINE-2
+      id: 112
+      mgmt_ip: 10.171.7.112/23
+
+##################################################
+# FE SDC Leaf Pairs                              #
+##################################################
+l3leaf:
+  defaults:
+    platform: 7050X3
+    loopback_ipv4_pool: 10.231.0.0/24
+    vtep_loopback_ipv4_pool: 10.231.1.0/24
+    uplink_interfaces: [Ethernet97/1, Ethernet98/1]
+    uplink_switches: [SDC-ASPINE-1, SDC-ASPINE-2]
+    uplink_ipv4_pool: 10.231.4.0/22
+    mlag_interfaces: [Ethernet103/1, Ethernet104/1]
+    mlag_peer_ipv4_pool: 192.0.0.0/23
+    mlag_peer_l3_ipv4_pool: 192.1.1.0/23
+    mlag_port_channel_id: 1000
+    virtual_router_mac_address: 00:1c:73:00:00:01
+    bgp_defaults:
+      - 'no bgp default ipv4-unicast'
+      - 'distance bgp 20 200 200'
+      - 'neighbor default send-community'
+      - 'graceful-restart restart-time 300'
+      - 'graceful-restart'
+    spanning_tree_mode: rapid-pvst
+    spanning_tree_priority: 0
+    structured_config:
+      spanning_tree:
+        edge_port:
+          bpduguard_default: true
+  node_groups:
+    ####################################################
+    # SDC CORP Border Leafs                            #
+    ####################################################
+    - group: BL_CORP
+      platform: 7280R3
+      structured_config:
+        tcam_profile:
+          system: vxlan-routing
+        router_bgp:
+          address_family_ipv4:
+            networks:
+              10.231.0.102/32:
+              10.231.0.104/32:
+              10.231.1.102/32:
+      filter:
+        tenants: [FE_DC]
+        tags: ['CORP']
+      bgp_as: 4200010299
+      evpn_gateway:
+        evpn_l2:
+          enabled: true
+        remote_peers:
+        - hostname: ISOC-ABL-1
+          ip_address: 10.231.0.2
+          bgp_as: 4200010199
+        - hostname: ISOC-ABL-2
+          ip_address: 10.231.0.4
+          bgp_as: 4200010199
+      nodes:
+        - name: SDC-ABL-1
+          id: 102
+          mgmt_ip: 10.171.7.102/23
+          uplink_switch_interfaces: [Ethernet3/36/1, Ethernet3/36/1]
+          uplink_interfaces: [Ethernet29/1, Ethernet30/1]
+          mlag_interfaces: [Ethernet31/1, Ethernet32/1]
+          structured_config:
+            router_bgp:
+              neighbors:
+                10.235.254.80:
+                  remote_as: 65500
+                  description: SDC-CORE-1 VRF Default
+                  peer_group: IPV4-UNDERLAY-PEERS
+                10.235.254.82:
+                  remote_as: 65500
+                  description: SDC-CORE-2 VRF Default
+                  peer_group: IPV4-UNDERLAY-PEERS
+        - name: SDC-ABL-2
+          id: 104
+          mgmt_ip: 10.171.7.104/23
+          uplink_switch_interfaces: [Ethernet4/36/1, Ethernet4/36/1]
+          uplink_interfaces: [Ethernet29/1, Ethernet30/1]
+          mlag_interfaces: [Ethernet31/1, Ethernet32/1]
+          structured_config:
+            router_bgp:
+              neighbors:
+                10.235.254.84:
+                  remote_as: 65500
+                  description: SDC-CORE-1 VRF Default
+                  peer_group: IPV4-UNDERLAY-PEERS
+                10.235.254.86:
+                  remote_as: 65500
+                  description: SDC-CORE-2 VRF Default
+                  peer_group: IPV4-UNDERLAY-PEERS
+    ####################################################
+    # SDC ESA Border Leafs                             #
+    ####################################################
+    - group: BL_ESA
+      platform: 7280R3
+      structured_config:
+        tcam_profile:
+          system: vxlan-routing
+      filter:
+        tenants: [FE_DC]
+        tags: ['ESA']
+      bgp_as: 4200020299
+      evpn_gateway:
+        evpn_l2:
+          enabled: true
+        remote_peers:
+        - hostname: ISOC-ESA-ABL-1
+          ip_address: 10.231.0.6
+          bgp_as: 4200020199
+        - hostname: ISOC-ESA-ABL-2
+          ip_address: 10.231.0.8
+          bgp_as: 4200020199
+      nodes:
+        - name: SDC-ESA-ABL-1
+          id: 106
+          mgmt_ip: 10.171.7.106/23
+          uplink_switch_interfaces: [Ethernet3/35/1, Ethernet3/35/1]
+          uplink_interfaces: [Ethernet29/1, Ethernet30/1]
+          mlag_interfaces: [Ethernet31/1, Ethernet32/1]
+        - name: SDC-ESA-ABL-2
+          id: 108
+          mgmt_ip: 10.171.7.108/23
+          uplink_switch_interfaces: [Ethernet4/35/1, Ethernet4/35/1]
+          uplink_interfaces: [Ethernet29/1, Ethernet30/1]
+          mlag_interfaces: [Ethernet31/1, Ethernet32/1]
+    ####################################################
+    # SDC Leaf Pair 1                                  #
+    ####################################################
+    - group: LeafPair1
+      filter:
+        tenants: [FE_DC]
+        tags: ['CORP']
+      bgp_as: 4200010201
+      nodes:
+        - name: SDC-ALEAF-1-1
+          id: 114
+          mgmt_ip: 10.171.7.114/23
+          uplink_switch_interfaces: [Ethernet3/1/1, Ethernet3/1/1]
+        - name: SDC-ALEAF-1-2
+          id: 116
+          mgmt_ip: 10.171.7.116/23
+          uplink_switch_interfaces: [Ethernet4/1/1, Ethernet4/1/1]
+    ####################################################
+    # SDC Leaf Pair 2                                  #
+    ####################################################
+    - group: LeafPair2
+      filter:
+        tenants: [FE_DC]
+        tags: ['CORP']
+      bgp_as: 4200010202
+      nodes:
+        - name: SDC-ALEAF-2-1
+          id: 118
+          mgmt_ip: 10.171.7.118/23
+          uplink_switch_interfaces: [Ethernet3/2/1, Ethernet3/2/1]
+        - name: SDC-ALEAF-2-2
+          id: 120
+          mgmt_ip: 10.171.7.120/23
+          uplink_switch_interfaces: [Ethernet4/2/1, Ethernet4/2/1]
+    ####################################################
+    # SDC Leaf Pair 3                                  #
+    ####################################################
+    - group: LeafPair3
+      filter:
+        tenants: [FE_DC]
+        tags: ['CORP']
+      bgp_as: 4200010203
+      nodes:
+        - name: SDC-ALEAF-3-1
+          id: 122
+          mgmt_ip: 10.171.7.122/23
+          uplink_switch_interfaces: [Ethernet3/3/1, Ethernet3/3/1]
+        - name: SDC-ALEAF-3-2
+          id: 124
+          mgmt_ip: 10.171.7.124/23
+          uplink_switch_interfaces: [Ethernet4/3/1, Ethernet4/3/1]
+    ####################################################
+    # SDC Leaf Pair 4                                  #
+    ####################################################
+    - group: LeafPair4
+      filter:
+        tenants: [FE_DC]
+        tags: ['CORP']
+      bgp_as: 4200010204
+      nodes:
+        - name: SDC-ALEAF-4-1
+          id: 126
+          mgmt_ip: 10.171.7.126/23
+          uplink_switch_interfaces: [Ethernet3/4/1, Ethernet3/4/1]
+        - name: SDC-ALEAF-4-2
+          id: 128
+          mgmt_ip: 10.171.7.128/23
+          uplink_switch_interfaces: [Ethernet4/4/1, Ethernet4/4/1]
+    ####################################################
+    # SDC Leaf Pair 5                                  #
+    ####################################################
+    - group: LeafPair5
+      filter:
+        tenants: [FE_DC]
+        tags: ['CORP']
+      bgp_as: 4200010205
+      nodes:
+        - name: SDC-ALEAF-5-1
+          id: 130
+          mgmt_ip: 10.171.7.130/23
+          uplink_switch_interfaces: [Ethernet3/5/1, Ethernet3/5/1]
+        - name: SDC-ALEAF-5-2
+          id: 132
+          mgmt_ip: 10.171.7.132/23
+          uplink_switch_interfaces: [Ethernet4/5/1, Ethernet4/5/1]
+    ####################################################
+    # SDC Leaf Pair 6                                  #
+    ####################################################
+    - group: LeafPair6
+      filter:
+        tenants: [FE_DC]
+        tags: ['CORP']
+      bgp_as: 4200010206
+      nodes:
+        - name: SDC-ALEAF-6-1
+          id: 134
+          mgmt_ip: 10.171.7.134/23
+          uplink_switch_interfaces: [Ethernet3/6/1, Ethernet3/6/1]
+        - name: SDC-ALEAF-6-2
+          id: 136
+          mgmt_ip: 10.171.7.136/23
+          uplink_switch_interfaces: [Ethernet4/6/1, Ethernet4/6/1]
+    ####################################################
+    # SDC  Leaf Pair 7                                 #
+    ####################################################
+    - group: LeafPair7
+      filter:
+        tenants: [FE_DC]
+        tags: ['CORP']
+      bgp_as: 4200010207
+      nodes:
+        - name: SDC-ALEAF-7-1
+          id: 138
+          mgmt_ip: 10.171.7.138/23
+          uplink_switch_interfaces: [Ethernet3/7/1, Ethernet3/7/1]
+        - name: SDC-ALEAF-7-2
+          id: 140
+          mgmt_ip: 10.171.7.140/23
+          uplink_switch_interfaces: [Ethernet4/7/1, Ethernet4/7/1]
+    ####################################################
+    # SDC Leaf Pair 8                                  #
+    ####################################################
+    - group: LeafPair8
+      filter:
+        tenants: [FE_DC]
+        tags: ['CORP']
+      bgp_as: 4200010208
+      nodes:
+        - name: SDC-ALEAF-8-1
+          id: 142
+          mgmt_ip: 10.171.7.142/23
+          uplink_switch_interfaces: [Ethernet3/8/1, Ethernet3/8/1]
+        - name: SDC-ALEAF-8-2
+          id: 144
+          mgmt_ip: 10.171.7.144/23
+          uplink_switch_interfaces: [Ethernet4/8/1, Ethernet4/8/1]
+    ####################################################
+    # SDC Leaf Pair 9                                  #
+    ####################################################
+    - group: LeafPair9
+      filter:
+        tenants: [FE_DC]
+        tags: ['CORP']
+      bgp_as: 4200010209
+      nodes:
+        - name: SDC-ALEAF-9-1
+          id: 146
+          mgmt_ip: 10.171.7.146/23
+          uplink_switch_interfaces: [Ethernet3/9/1, Ethernet3/9/1]
+        - name: SDC-ALEAF-9-2
+          id: 148
+          mgmt_ip: 10.171.7.148/23
+          uplink_switch_interfaces: [Ethernet4/9/1, Ethernet4/9/1]
+    ####################################################
+    # SDC Leaf Pair 10                                 #
+    ####################################################
+    - group: LeafPair10
+      filter:
+        tenants: [FE_DC]
+        tags: ['CORP']
+      bgp_as: 4200010210
+      nodes:
+        - name: SDC-ALEAF-10-1
+          id: 150
+          mgmt_ip: 10.171.7.150/23
+          uplink_switch_interfaces: [Ethernet3/10/1, Ethernet3/10/1]
+        - name: SDC-ALEAF-10-2
+          id: 152
+          mgmt_ip: 10.171.7.152/23
+          uplink_switch_interfaces: [Ethernet4/10/1, Ethernet4/10/1]
+    ####################################################
+    # SDC Leaf Pair 11 (ESA)                           #
+    ####################################################
+    - group: LeafPair11
+      evpn_services_l2_only: true
+      filter:
+        tenants: [FE_DC]
+        tags: ['ESA', 'ESA-VXRAIL']
+      bgp_as: 4200020211
+      nodes:
+        - name: SDC-ESA-ALEAF-11-1
+          id: 154
+          mgmt_ip: 10.171.7.154/23
+          uplink_switch_interfaces: [Ethernet3/11/1, Ethernet3/11/1]
+        - name: SDC-ESA-ALEAF-11-2
+          id: 156
+          mgmt_ip: 10.171.7.156/23
+          uplink_switch_interfaces: [Ethernet4/11/1, Ethernet4/11/1]
+    ####################################################
+    # SDC Leaf Pair 12                                 #
+    ####################################################
+    - group: LeafPair12
+      filter:
+        tenants: [FE_DC]
+        tags: ['CORP']
+      bgp_as: 4200010212
+      nodes:
+        - name: SDC-ALEAF-12-1
+          id: 158
+          mgmt_ip: 10.171.7.158/23
+          uplink_switch_interfaces: [Ethernet3/12/1, Ethernet3/12/1]
+        - name: SDC-ALEAF-12-2
+          id: 160
+          mgmt_ip: 10.171.7.160/23
+          uplink_switch_interfaces: [Ethernet4/12/1, Ethernet4/12/1]
+    ####################################################
+    # SDC Leaf Pair 13                                 #
+    ####################################################
+    - group: LeafPair13
+      filter:
+        tenants: [FE_DC]
+        tags: ['CORP']
+      bgp_as: 4200010213
+      nodes:
+        - name: SDC-ALEAF-13-1
+          id: 162
+          mgmt_ip: 10.171.7.162/23
+          uplink_switch_interfaces: [Ethernet3/13/1, Ethernet3/13/1]
+        - name: SDC-ALEAF-13-2
+          id: 164
+          mgmt_ip: 10.171.7.164/23
+          uplink_switch_interfaces: [Ethernet4/13/1, Ethernet4/13/1]
+    ####################################################
+    # SDC Leaf Pair 14 (ESA)                           #
+    ####################################################
+    - group: LeafPair14
+      evpn_services_l2_only: true
+      filter:
+        tenants: [FE_DC]
+        tags: ['ESA']
+      bgp_as: 4200020214
+      nodes:
+        - name: SDC-ESA-ALEAF-14-1
+          id: 166
+          mgmt_ip: 10.171.7.166/23
+          uplink_switch_interfaces: [Ethernet3/14/1, Ethernet3/14/1]
+        - name: SDC-ESA-ALEAF-14-2
+          id: 168
+          mgmt_ip: 10.171.7.168/23
+          uplink_switch_interfaces: [Ethernet4/14/1, Ethernet4/14/1]
+    ####################################################
+    # SDC Leaf Pair 15 (ESA)                           #
+    ####################################################
+    - group: LeafPair15
+      evpn_services_l2_only: true
+      filter:
+        tenants: [FE_DC]
+        tags: ['ESA']
+      bgp_as: 4200020215
+      nodes:
+        - name: SDC-ESA-ALEAF-15-1
+          id: 170
+          mgmt_ip: 10.171.7.170/23
+          uplink_switch_interfaces: [Ethernet3/15/1, Ethernet3/15/1]
+        - name: SDC-ESA-ALEAF-15-2
+          id: 172
+          mgmt_ip: 10.171.7.172/23
+          uplink_switch_interfaces: [Ethernet4/15/1, Ethernet4/15/1]
+    ####################################################
+    # SDC Leaf Pair 16                                 #
+    ####################################################
+    - group: LeafPair16
+      filter:
+        tenants: [FE_DC]
+        tags: ['CORP']
+      bgp_as: 4200010216
+      nodes:
+        - name: SDC-ALEAF-16-1
+          id: 174
+          mgmt_ip: 10.171.7.174/23
+          uplink_switch_interfaces: [Ethernet3/16/1, Ethernet3/16/1]
+        - name: SDC-ALEAF-16-2
+          id: 176
+          mgmt_ip: 10.171.7.176/23
+          uplink_switch_interfaces: [Ethernet4/16/1, Ethernet4/16/1]
+    ####################################################
+    # SDC Leaf Pair 17                                 #
+    ####################################################
+    - group: LeafPair17
+      filter:
+        tenants: [FE_DC]
+        tags: ['CORP']
+      bgp_as: 4200010217
+      nodes:
+        - name: SDC-ALEAF-17-1
+          id: 178
+          mgmt_ip: 10.171.7.178/23
+          uplink_switch_interfaces: [Ethernet3/17/1, Ethernet3/17/1]
+        - name: SDC-ALEAF-17-2
+          id: 180
+          mgmt_ip: 10.171.7.180/23
+          uplink_switch_interfaces: [Ethernet4/17/1, Ethernet4/17/1]
+    ####################################################
+    # SDC Leaf Pair 18                                 #
+    ####################################################
+    - group: LeafPair18
+      filter:
+        tenants: [FE_DC]
+        tags: ['CORP']
+      bgp_as: 4200010218
+      nodes:
+        - name: SDC-ALEAF-18-1
+          id: 182
+          mgmt_ip: 10.171.7.182/23
+          uplink_switch_interfaces: [Ethernet3/18/1, Ethernet3/18/1]
+        - name: SDC-ALEAF-18-2
+          id: 184
+          mgmt_ip: 10.171.7.184/23
+          uplink_switch_interfaces: [Ethernet4/18/1, Ethernet4/18/1]
+
+####################################################
+# External Fabric PtP L3 Conncectivity             #
+####################################################
+core_interfaces:
+  p2p_links:
+    ############################################################
+    # SDC-ABL-1 to SDC COREs UNDERLAY (Default VRF) Peerings   #
+    ############################################################
+    - ip: [ 10.235.254.81/31, 10.235.254.80/31 ]
+      nodes: [ SDC-ABL-1, SDC-CORE-1 ]
+      interfaces: [ Ethernet1/1, Ethernet1/52 ]
+      include_in_underlay_protocol: false
+      mtu: 9214
+    - ip: [ 10.235.254.83/31, 10.235.254.82/31 ]
+      nodes: [ SDC-ABL-1, SDC-CORE-2 ]
+      interfaces: [ Ethernet2/1, Ethernet1/52 ]
+      include_in_underlay_protocol: false
+      mtu: 9214
+    ############################################################
+    # SDC-ABL-2 to SDC COREs UNDERLAY (Default VRF) Peerings   #
+    ############################################################
+    - ip: [ 10.235.254.85/31, 10.235.254.84/31 ]
+      nodes: [ SDC-ABL-2, SDC-CORE-1 ]
+      interfaces: [ Ethernet1/1, Ethernet2/52 ]
+      include_in_underlay_protocol: false
+      mtu: 9214
+    - ip: [  10.235.254.87/31, 10.235.254.86/31 ]
+      nodes: [ SDC-ABL-2, SDC-CORE-2 ]
+      interfaces: [ Ethernet2/1, Ethernet2/52 ]
+      include_in_underlay_protocol: false
+      mtu: 9214

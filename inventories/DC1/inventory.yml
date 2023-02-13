@@ -1,0 +1,49 @@
+# DC1 Inventory
+---
+
+# DC1_Fabric - L3LS EVPN Inventory
+
+DC1_FABRIC:
+  children:
+    DC1_SPINES:
+      hosts:
+        DC1-SPINE1:
+          ansible_host: 127.0.0.1
+          ansible_port: 22001
+          ansible_httpapi_port: 44301
+        DC1-SPINE2:
+          ansible_host: 127.0.0.1
+          ansible_port: 22002
+          ansible_httpapi_port: 44302
+    DC1_LEAFS:
+      hosts:
+        DC1-LEAF1:
+          ansible_host: 127.0.0.1
+          ansible_port: 22003
+          ansible_httpapi_port: 44303
+        DC1-LEAF2:
+          ansible_host: 127.0.0.1
+          ansible_port: 22004
+          ansible_httpapi_port: 44304
+        DC1-LEAF3:
+          ansible_host: 127.0.0.1
+          ansible_port: 22005
+          ansible_httpapi_port: 44305
+        DC1-LEAF4:
+          ansible_host: 127.0.0.1
+          ansible_port: 22006
+          ansible_httpapi_port: 44306
+        DC1-LEAF5:
+          ansible_host: 127.0.0.1
+          ansible_port: 22007
+          ansible_httpapi_port: 44307
+        DC1-LEAF6:
+          ansible_host: 127.0.0.1
+          ansible_port: 22008
+          ansible_httpapi_port: 44308
+    DC1_FABRIC_SERVICES:
+      children:
+        DC1_LEAFS:
+    DC1_FABRIC_PORTS:
+      children:
+        DC1_LEAFS:

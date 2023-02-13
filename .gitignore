@@ -1,0 +1,7 @@
+inventories/DC1/reports
+inventories/DC1/intended/structured_configs/*debug*.yml
+inventories/DC2/reports
+inventories/DC2/intended/structured_configs/*debug*.yml
+.vscode
+clab-AVD-L3LS
+clab/*.bak

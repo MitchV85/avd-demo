@@ -1,0 +1,13 @@
+---
+
+- name: Apply Base Configs to Lab Nodes
+  connection: httpapi
+  hosts: DC1_FABRIC
+
+  tasks:
+
+    - name: Applying Base Configs to Lab Nodes
+      eos_config:
+        src: "../clab/startup-configs/{{ inventory_hostname }}.cfg"
+        replace: config
+        save_when: always

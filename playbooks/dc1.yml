@@ -1,0 +1,47 @@
+---
+
+- name: Build Switch configuration
+  hosts: DC1_FABRIC
+  tasks:
+
+    - name: Import Global Vars
+      tags: [always]
+      include_vars: "{{ item }}"
+      with_items:
+        - "../global_vars/GLOBAL.yml"
+
+    - name: Generate Structured Variables per Device
+      tags: [build, never]
+      import_role:
+        name: arista.avd.eos_designs
+
+    - name: Generate Intended Config and Documentation
+      tags: [build, never]
+      import_role:
+        name: arista.avd.eos_cli_config_gen
+
+    - name: Deploy Configuration to Device
+      tags: [deploy, never]
+      import_role:
+         name: arista.avd.eos_config_deploy_eapi
+
+    - name: validate states on EOS devices
+      tags: [checkstate, never]
+      import_role:
+         name: arista.avd.eos_validate_state
+
+# - name: Deploying Changes via CVaaS
+#   hosts: cvaas
+#   connection: local
+#   tasks:
+
+#     - name: run CVP provisioning
+#       tags: [cvaas_deploy]
+#       import_role:
+#          name: arista.avd.eos_config_deploy_cvp
+#       vars:
+#         container_root: 'DC1_FABRIC'
+#         configlets_prefix: 'AVD_DC1'
+#         device_filter: ''
+#         state: present
+#         # execute_tasks: true

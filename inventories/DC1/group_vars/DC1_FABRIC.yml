@@ -1,0 +1,107 @@
+---
+
+fabric_name: DC1_FABRIC
+
+underlay_routing_protocol: OSPF
+overlay_routing_protocol: IBGP
+
+bgp_as: 65000
+
+p2p_uplinks_mtu: 9214
+
+evpn_import_pruning: true
+
+bgp_peer_groups:
+  evpn_overlay_peers:
+    name: EVPN-OVERLAY-LOCAL-PEERS
+    password: LenMQ+SJnRMvQfwsxxnuXw==
+
+##################################################
+# DC1 Spines                                     #
+##################################################
+spine:
+  defaults:
+    platform: cEOS
+    loopback_ipv4_pool: 1.1.1.0/24
+    bgp_defaults:
+      - 'no bgp default ipv4-unicast'
+      - 'distance bgp 20 200 200'
+      - 'neighbor default send-community'
+      - 'graceful-restart restart-time 300'
+      - 'graceful-restart'
+  nodes:
+    - name: DC1-SPINE1
+      id: 1
+      mgmt_ip: 172.100.100.101/23
+    - name: DC1-SPINE2
+      id: 2
+      mgmt_ip: 172.100.100.102/23
+
+##################################################
+# FE ISOC Leaf Pairs                             #
+##################################################
+l3leaf:
+  defaults:
+    platform: cEOS
+    loopback_ipv4_pool: 1.1.1.0/24
+    vtep_loopback_ipv4_pool: 2.2.2.0/24
+    uplink_interfaces: [Ethernet1, Ethernet2]
+    uplink_switches: [DC1-SPINE1, DC1-SPINE2]
+    uplink_ipv4_pool: 10.0.0.0/23
+    mlag_interfaces: [Ethernet5, Ethernet6]
+    mlag_peer_ipv4_pool: 192.0.0.0/23
+    mlag_peer_l3_ipv4_pool: 172.16.0.0/24
+    mlag_port_channel_id: 1000
+    virtual_router_mac_address: 00:1c:73:00:00:01
+    bgp_defaults:
+      - 'no bgp default ipv4-unicast'
+      - 'distance bgp 20 200 200'
+      - 'neighbor default send-community'
+      - 'graceful-restart restart-time 300'
+      - 'graceful-restart'
+    spanning_tree_mode: rapid-pvst
+    spanning_tree_priority: 0
+    structured_config:
+      spanning_tree:
+        edge_port:
+          bpduguard_default: true
+  node_groups:
+    ####################################################
+    # DC1Leaf Pair 1                                   #
+    ####################################################
+    - group: LeafPair1
+      nodes:
+        - name: DC1-LEAF1
+          id: 11
+          mgmt_ip: 172.100.100.103/23
+          uplink_switch_interfaces: [Ethernet1, Ethernet1]
+        - name: DC1-LEAF2
+          id: 12
+          mgmt_ip: 172.100.100.104/23
+          uplink_switch_interfaces: [Ethernet2, Ethernet2]
+    ####################################################
+    # DC1Leaf Pair 2                                   #
+    ####################################################
+    - group: LeafPair2
+      nodes:
+        - name: DC1-LEAF3
+          id: 13
+          mgmt_ip: 172.100.100.105/23
+          uplink_switch_interfaces: [Ethernet3, Ethernet3]
+        - name: DC1-LEAF4
+          id: 14
+          mgmt_ip: 172.100.100.106/23
+          uplink_switch_interfaces: [Ethernet4, Ethernet4]
+    ####################################################
+    # DC1Leaf Pair 3                                   #
+    ####################################################
+    - group: LeafPair3
+      nodes:
+        - name: DC1-LEAF5
+          id: 15
+          mgmt_ip: 172.100.100.107/23
+          uplink_switch_interfaces: [Ethernet5, Ethernet5]
+        - name: DC1-LEAF6
+          id: 16
+          mgmt_ip: 172.100.100.108/23
+          uplink_switch_interfaces: [Ethernet6, Ethernet6]

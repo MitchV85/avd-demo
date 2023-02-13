@@ -1,0 +1,540 @@
+---
+
+tenants:
+  FE_DC:
+    mac_vrf_vni_base: 10000
+    evpn_l2_multi_domain: false
+    vrfs:
+      CORP:
+        vrf_vni: 50001
+        mlag_ibgp_peering_vlan: 4001
+        mlag_ibgp_peering_ipv4_pool: 192.2.2.0/23
+        svis:
+          994:
+            name: TSOC-F5-BACK_S_10.229.96.0/24
+            description: TSOC-F5-BACK_S_10.229.96.0/24
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 10.229.96.1/24
+            evpn_l2_multi_domain: true
+          995:
+            name: TSOC-F5-FRONT_S_10.229.0.0/24
+            description: TSOC-F5-FRONT_S_10.229.0.0/24
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 10.229.0.1/24
+            evpn_l2_multi_domain: true
+          2000:
+            name: SDC-SERVERS_L_10.234.0.0/23
+            description: SDC-SERVERS_L_10.234.0.0/23
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 10.234.0.1/23
+          2002:
+            name: SDC-SERVERS_L_10.234.2.0/23
+            description: SDC-SERVERS_L_10.234.2.0/23
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 10.234.2.1/23
+          2004:
+            name: SDC-SERVERS_L_10.234.4.0/23
+            description: SDC-SERVERS_L_10.234.4.0/23
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 10.234.4.1/23
+          2006:
+            name: SDC-SERVERS_L_10.234.6.0/23
+            description: SDC-SERVERS_L_10.234.6.0/23
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 10.234.6.1/23
+          2008:
+            name: SDC-SERVERS_L_10.234.8.0/23
+            description: SDC-SERVERS_L_10.234.8.0/23
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 10.234.8.1/23
+          2010:
+            name: SDC-SERVERS_L_10.234.10.0/23
+            description: SDC-SERVERS_L_10.234.10.0/23
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 10.234.10.1/23
+          2012:
+            name: SDC-SERVERS_L_10.234.12.0/23
+            description: SDC-SERVERS_L_10.234.12.0/23
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 10.234.12.1/23
+          2014:
+            name: SDC-SERVERS_L_10.234.14.0/23
+            description: SDC-SERVERS_L_10.234.14.0/23
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 10.234.14.1/23
+          2016:
+            name: SDC-SERVERS_L_10.234.16.0/23
+            description: SDC-SERVERS_L_10.234.16.0/23
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 10.234.16.1/23
+          2018:
+            name: SDC-SERVERS_L_10.234.18.0/23
+            description: SDC-SERVERS_L_10.234.18.0/23
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 10.234.18.1/23
+          2020:
+            name: SDC_ISILON-DB-11_L_10.234.20.0/23
+            description: SDC_ISILON-DB-11_L_10.234.20.0/23
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 10.234.20.0/23
+          2112:
+            name: SDC-VMOTION_L_10.234.112.0/24
+            description: SDC-VMOTION_L_10.234.112.0/24
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 10.234.112.1/24
+          2113:
+            name: SDC-VMWARE-MGMT_L_10.234.113.0/24
+            description: SDC-VMWARE-MGMT_L_10.234.113.0/24
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 10.234.113.1/24
+          2114:
+            name: SDC-ILOS_L_10.234.114.0/23
+            description: SDC-ILOS_L_10.234.114.0/23
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 10.234.114.1/23
+          2116:
+            name: SDC-ILOS_L_10.234.116.0/23
+            description: SDC-ILOS_L_10.234.116.0/23
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 10.234.116.1/23
+          2301:
+            name: AMI-PROD-F5_L_10.234.30.0/25
+            description: AMI-PROD-F5_L_10.234.30.0/25
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 10.234.30.1/25
+          2302:
+            name: AMI-NOT-PROD-F5_L_10.234.30.128/25
+            description: AMI-NOT-PROD-F5_L_10.234.30.128/25
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 10.234.30.129/25
+          2310:
+            name: Teradata-Backend_L_10.234.31.0/24
+            description: Teradata-Backend_L_10.234.31.0/24
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 10.234.31.1/24
+          2312:
+            name: SDC-DataDomains_L_10.234.32.0/24
+            description: SDC-DataDomains_L_10.234.32.0/24
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 110.234.32.1/24
+          2400:
+            name: APM-F5-INTERNAL_S
+            description: APM-F5-INTERNAL_S
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 10.229.100.1/23
+            evpn_l2_multi_domain: true
+          2401:
+            name: F5-PROD-INT-ISOC_S
+            description: F5-PROD-INT-ISOC_S
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 10.229.104.1/23
+            evpn_l2_multi_domain: true
+          2402:
+            name: APM-F5-EXTERNAL_S
+            description: APM-F5-EXTERNAL_S
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 10.229.102.1/23
+            evpn_l2_multi_domain: true
+          2403:
+            name: F5-PROD-INT-SDC_S
+            description: F5-PROD-INT-SDC_S
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 10.229.106.1/23
+            evpn_l2_multi_domain: true
+          2404:
+            name: F5-QA-INT-ISOC_S
+            description: F5-QA-INT-ISOC_S
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 10.229.108.1/23
+            evpn_l2_multi_domain: true
+          2405:
+            name: F5-QA-INT-SDC_S
+            description: F5-QA-INT-SDC_S
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 10.229.110.1/23
+            evpn_l2_multi_domain: true
+          2406:
+            name: F5-PROD-EXT_S_10.229.112.2/24
+            description: F5-PROD-EXT_S_10.229.112.2/24
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 10.229.112.1/24
+            evpn_l2_multi_domain: true
+          2407:
+            name: F5-QA-EXT_S_10.229.113.2/24
+            description: F5-QA-EXT_S_10.229.113.2/24
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 10.229.113.1/24
+            evpn_l2_multi_domain: true
+          2408:
+            name: INT-DMZ_S_10.229.114.0/24
+            description: INT-DMZ_S_10.229.114.0/24
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 10.229.114.1/24
+            evpn_l2_multi_domain: true
+          2409:
+            name: INT-DMZ_S_10.229.116.0/24
+            description: INT-DMZ_S_10.229.116.0/24
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 10.229.116.1/24
+            evpn_l2_multi_domain: true
+          2410:
+            name: SERVERS-11_S_10.229.10.0/24
+            description: SERVERS-11_S_10.229.10.0/24
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 10.229.10.1/24
+            evpn_l2_multi_domain: true
+          2411:
+            name: SERVERS-12_S_10.229.12.0/24
+            description: SERVERS-12_S_10.229.12.0/24
+            tags: ['CORP']
+            enabled: true
+            mtu: 9014
+            ip_address_virtual: 10.229.12.1/24
+            evpn_l2_multi_domain: true
+
+        l3_interfaces:
+          ######################################################
+          # SDC-ABL-1 L3 PtP (CORP VRF) to SDC-COREs           #
+          ######################################################
+          - interfaces: [ Ethernet5/1, Ethernet3/51 ]
+            ip_addresses: [ 10.235.254.97/31, 10.235.254.96/31]
+            nodes: [ SDC-ABL-1, SDC-CORE-1]
+            description: P2P_LINK_TO_SDC-CORE-1_Ethernet3/51
+            enabled: true
+            mtu: 9214
+          - interfaces: [ Ethernet6/1, Ethernet3/51 ]
+            ip_addresses: [ 10.235.254.99/31, 10.235.254.98/31]
+            nodes: [ SDC-ABL-1, SDC-CORE-2]
+            description: P2P_LINK_TO_SDC-CORE-2_Ethernet3/51
+            enabled: true
+            mtu: 9214
+          ######################################################
+          # SDC-ABL-2 L3 PtP (CORP VRF) to SDC-COREs           #
+          ######################################################
+          - interfaces: [ Ethernet5/1, Ethernet3/52 ]
+            ip_addresses: [ 10.235.254.101/31, 10.235.254.100/31]
+            nodes: [ SDC-ABL-2, SDC-CORE-1]
+            description: P2P_LINK_TO_SDC-CORE-1_Ethernet3/52
+            enabled: true
+            mtu: 9214
+          - interfaces: [ Ethernet6/1, Ethernet3/52 ]
+            ip_addresses: [ 10.235.254.103/31, 10.235.254.102/31]
+            nodes: [ SDC-ABL-2, SDC-CORE-2]
+            description: P2P_LINK_TO_SDC-CORE-2_Ethernet3/52
+            enabled: true
+            mtu: 9214
+
+        bgp_peers:
+          ######################################################
+          # SDC-ABL-1 eBGP Peerings (CORP VRF) to SDC-COREs    #
+          ######################################################
+          - ip_address: 10.235.254.96
+            remote_as: 65500
+            description: SDC-CORE-1 CORP VRF
+            password: EncryptedPasswordHere
+            send_community: all
+            maximum_routes: 0
+            # Nodes is required to restrict configuration of BGP neighbors to certain nodes in the network.
+            nodes: [ SDC-ABL-1 ]
+          - ip_address: 10.235.254.98
+            remote_as: 65500
+            description: SDC-CORE-2 CORP VRF
+            password: EncryptedPasswordHere
+            send_community: all
+            maximum_routes: 0
+            # Nodes is required to restrict configuration of BGP neighbors to certain nodes in the network.
+            nodes: [ SDC-ABL-1 ]
+          ######################################################
+          # SDC-ABL-2 eBGP Peerings (CORP VRF) to SDC-COREs    #
+          ######################################################
+          - ip_address: 10.235.254.100
+            remote_as: 65500
+            description: SDC-CORE-1 CORP VRF
+            password: EncryptedPasswordHere
+            send_community: all
+            maximum_routes: 0
+            # Nodes is required to restrict configuration of BGP neighbors to certain nodes in the network.
+            nodes: [ SDC-ABL-2 ]
+          - ip_address: 10.235.254.102
+            remote_as: 65500
+            description: SDC-CORE-2 CORP VRF
+            password: EncryptedPasswordHere
+            send_community: all
+            maximum_routes: 0
+            # Nodes is required to restrict configuration of BGP neighbors to certain nodes in the network.
+            nodes: [ SDC-ABL-2 ]
+
+    l2vlans:
+      3:
+        name: NSP-VCPAA-REGION1_L
+        tags: ['ESA-VXRAIL']
+      16:
+        name: NSP-VCPAA-REGION16_L
+        tags: ['ESA-VXRAIL']
+      17:
+        name: NSP-VCPAA-REGION17_L
+        tags: ['ESA-VXRAIL']
+      31:
+        name: NSP-VCPAA-REGION31_L
+        tags: ['ESA-VXRAIL']
+      43:
+        name: NSP-VCPAA3_L
+        tags: ['ESA-VXRAIL']
+      44:
+        name: NSP-VCPAA4_L
+        tags: ['ESA-VXRAIL']
+      46:
+        name: NSP-VCPAA6_L
+        tags: ['ESA-VXRAIL']
+      114:
+        name: NSP-VCPAA-REGION3_L
+        tags: ['ESA-VXRAIL']
+      1429:
+        name: SDC_ESA-TSOC_L_10.113.56.0/23
+        tags: ['ESA']
+      1430:
+        name: SDC_ESA-ADMIN_L_10.113.20.0/24
+        tags: ['ESA']
+      1431:
+        name: SDC_ESA-ILO_L_10.113.48.0/23
+        tags: ['ESA']
+      1439:
+        name: ESA-FW-MGMT_S_10.113.44.0/25
+        tags: ['ESA']
+        evpn_l2_multi_domain: true
+      1440:
+        name: SDC_ESA-ESXI-VSAN_L_10.113.43.128/26
+        tags: ['ESA']
+      1441:
+        name: SDC_ESA-ESXI-VMTN_L_10.113.43.0/26
+        tags: ['ESA']
+      1442:
+        name: SDC_ESA-ESXI-MGMT_L_10.113.42.128/26
+        tags: ['ESA']
+      1443:
+        name: SDC_ESA-PHYS-SEC_L_10.113.42.0/27
+        tags: ['ESA']
+      1444:
+        name: SDC_ESA-SECURE_L_10.113.41.128/27
+        tags: ['ESA']
+      1445:
+        name: SDC_ESA-ESM_L_10.113.41.0/27
+        tags: ['ESA']
+      1446:
+        name: SDC_ESA-ED_L_10.113.40.129/27
+        tags: ['ESA']
+      1447:
+        name: SDC_ESA-ALU_L_10.113.40.0/27
+        tags: ['ESA']
+      1448:
+        name: SDC_ESA-TSOG_L_10.113.32.0/23
+        tags: ['ESA']
+      1449:
+        name: SDC_ESA-CYB-SEC_L_10.113.24.0/23
+        tags: ['ESA']
+      1450:
+        name: SDC_ESA-JH-DMZ_L
+        tags: ['ESA']
+      1529:
+        name: ISOC-ESA-TSOC_S_10.113.56.0/23
+        tags: ['ESA']
+        evpn_l2_multi_domain: true
+      1530:
+        name: ISOC-ESA-ADMIN_S_10.113.20.0/24
+        tags: ['ESA']
+        evpn_l2_multi_domain: true
+      1531:
+        name: ISOC-ESA-ILO_S_10.113.48.0/23
+        tags: ['ESA']
+        evpn_l2_multi_domain: true
+      1538:
+        name: ISOC-ESA-TOR-mgmt-int_S_10.113.44.128/26
+        tags: ['ESA']
+        evpn_l2_multi_domain: true
+      1539:
+        name: SDC_ESA-FW-MGMT-2_L
+        tags: ['ESA']
+      1540:
+        name: ISOC-ESA-ESXI-VSAN_S_10.113.43.128/26
+        tags: ['ESA']
+        evpn_l2_multi_domain: true
+      1541:
+        name: ISOC-ESA-ESXI-VMTN_S_10.113.43.0/26
+        tags: ['ESA']
+        evpn_l2_multi_domain: true
+      1542:
+        name: ISOC-ESA-ESXI-MGMT_S_10.113.42.128/26
+        tags: ['ESA']
+        evpn_l2_multi_domain: true
+      1543:
+        name: ISOC-ESA-PHYS-SEC_S_10.113.42.0/26
+        tags: ['ESA']
+        evpn_l2_multi_domain: true
+      1544:
+        name: ISOC-ESA-SECURE_S_10.113.41.128/27
+        tags: ['ESA']
+        evpn_l2_multi_domain: true
+      1545:
+        name: ISOC-ESA-ESM_S_10.113.41.0/27
+        tags: ['ESA']
+        evpn_l2_multi_domain: true
+      1546:
+        name: ISOC-ESA-ED_S_10.113.40.128/27
+        tags: ['ESA']
+        evpn_l2_multi_domain: true
+      1547:
+        name: ISOC-ESA-ALU_S_10.113.40.0/27
+        tags: ['ESA']
+        evpn_l2_multi_domain: true
+      1548:
+        name: ISOC-ESA-TSOG_S_10.113.32.0/23
+        tags: ['ESA']
+        evpn_l2_multi_domain: true
+      1549:
+        name: ISOC-ESA-CYB-SEC_S_10.113.24.0/23
+        tags: ['ESA']
+        evpn_l2_multi_domain: true
+      1550:
+        name: ISOC-ESA-JH-DMZ_S_10.113.16.0/24
+        tags: ['ESA']
+        evpn_l2_multi_domain: true
+      1629:
+        name: SDC-ESA-TSOC_S_10.113.60.0/23
+        tags: ['ESA']
+        evpn_l2_multi_domain: true
+      1630:
+        name: SDC-ESA-ADMIN_S_10.113.21.0/24
+        tags: ['ESA']
+        evpn_l2_multi_domain: true
+      1631:
+        name: SDC-ESA-ILO_S_10.113.52.0/23
+        tags: ['ESA']
+        evpn_l2_multi_domain: true
+      1638:
+        name: SDC-ESA-TOR-mgmt-int_S_10.113.44.192/26
+        tags: ['ESA']
+        evpn_l2_multi_domain: true
+      1640:
+        name: SDC-ESA-ESXI-VSAN_S_10.113.43.192/26
+        tags: ['ESA']
+        evpn_l2_multi_domain: true
+      1641:
+        name: SDC-ESA-ESXI-VMTN_S_10.113.43.64/26
+        tags: ['ESA']
+        evpn_l2_multi_domain: true
+      1642:
+        name: SDC-ESA-ESXI-MGMT_S_10.113.42.192/26
+        tags: ['ESA']
+        evpn_l2_multi_domain: true
+      1643:
+        name: SDC-ESA-PHYS-SEC_S_10.113.42.64/26
+        tags: ['ESA']
+        evpn_l2_multi_domain: true
+      1644:
+        name: SDC-ESA-SECURE_S_10.113.41.192/27
+        tags: ['ESA']
+        evpn_l2_multi_domain: true
+      1645:
+        name: SDC-ESA-ESM_S_10.113.41.64/27
+        tags: ['ESA']
+        evpn_l2_multi_domain: true
+      1646:
+        name: SDC-ESA-ED_S_10.113.40.192/27
+        tags: ['ESA']
+        evpn_l2_multi_domain: true
+      1647:
+        name: SDC-ESA-ALU_S_10.113.40.32/27
+        tags: ['ESA']
+        evpn_l2_multi_domain: true
+      1648:
+        name: SDC-ESA-TechSec_S_10.113.34.0/23
+        tags: ['ESA']
+        evpn_l2_multi_domain: true
+      1649:
+        name: SDC-ESA-CYB-SEC_S_10.113.26.0/23
+        tags: ['ESA']
+        evpn_l2_multi_domain: true
+      1650:
+        name: SDC-ESA-JH-DMZ_S_10.113.17.1/24
+        tags: ['ESA']
+        evpn_l2_multi_domain: true
+      1996:
+        name: SDC_NON-ROUTED_HMC4_L
+        tags: ['CORP']
+      1997:
+        name: SDC_NON-ROUTED_HMC3_L
+        tags: ['CORP']
+      1998:
+        name: SDC_NON-ROUTED_HMC2_L
+        tags: ['CORP']
+      1999:
+        name: SDC_NON_ROUTED_HMC_L
+        tags: ['CORP']
+      2412:
+        name: RARITAN-KVM_S
+        tags: ['CORP']
+        evpn_l2_multi_domain: true
